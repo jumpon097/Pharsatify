@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Pharsatify — ประเมินความพึงพอใจห้องยา",
+  "short_name": "Pharsatify",
+  "description": "แบบประเมินความพึงพอใจบริการห้องยา โรงพยาบาลมะเร็งอุบลราชธานี",
+  "lang": "th",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff8fc",
+  "theme_color": "#c73f85",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
