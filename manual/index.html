@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#c73f85">
+  <title>คู่มือกระจายระบบ Pharsatify</title>
+  <style>
+    :root{
+      --pink:#c73f85;
+      --pink-dark:#a92e6d;
+      --purple:#8f4db1;
+      --ink:#432d3c;
+      --muted:#75646f;
+      --line:#eedce7;
+      --soft:#fff7fb;
+      --code:#2d2230;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 90% 0,rgba(199,63,133,.12),transparent 30%),
+        radial-gradient(circle at 0 85%,rgba(143,77,177,.10),transparent 30%),
+        #fffafd;
+      font-family:"Noto Sans Thai","Sarabun",Tahoma,Arial,sans-serif;
+      line-height:1.7;
+    }
+    .shell{width:min(960px,calc(100% - 28px));margin:0 auto;padding:28px 0 56px}
+    .hero{
+      padding:30px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 22px 60px rgba(100,42,75,.12);
+    }
+    .brand{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+    .mark{
+      width:58px;height:58px;border-radius:18px;
+      display:grid;place-items:center;
+      color:#fff;font-size:30px;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      box-shadow:0 10px 24px rgba(169,46,109,.22);
+    }
+    h1{margin:0;font-size:clamp(27px,5vw,42px);line-height:1.25}
+    .lead{margin:8px 0 0;color:var(--muted)}
+    .url{
+      display:inline-block;margin-top:15px;padding:8px 12px;border-radius:999px;
+      background:#fceaf4;color:var(--pink-dark);font-weight:800;font-size:13px;
+    }
+    nav{
+      position:sticky;top:0;z-index:10;
+      display:flex;gap:8px;overflow:auto;
+      margin:18px 0;padding:10px;
+      border:1px solid var(--line);border-radius:18px;
+      background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+    }
+    nav a{
+      flex:0 0 auto;padding:8px 12px;border-radius:999px;
+      color:var(--ink);text-decoration:none;font-weight:700;font-size:13px;
+    }
+    nav a:hover{background:#fceaf4;color:var(--pink-dark)}
+    section{
+      margin-top:18px;padding:25px;
+      border:1px solid var(--line);border-radius:24px;background:#fff;
+      box-shadow:0 12px 34px rgba(100,42,75,.06);
+    }
+    h2{margin:0 0 12px;font-size:23px}
+    h3{margin:22px 0 8px;font-size:17px;color:var(--pink-dark)}
+    ol,ul{padding-left:23px}
+    li{margin:7px 0}
+    pre{
+      overflow:auto;padding:16px;border-radius:16px;
+      color:#fdf4fa;background:var(--code);
+      font-family:Consolas,"Courier New",monospace;font-size:13px;line-height:1.55;
+    }
+    code{font-family:Consolas,"Courier New",monospace}
+    p code,li code{
+      padding:2px 6px;border-radius:7px;
+      color:var(--pink-dark);background:#fceaf4;
+    }
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{padding:17px;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+    .card strong{display:block;margin-bottom:5px;color:var(--pink-dark)}
+    .warn{
+      padding:15px 17px;border-left:5px solid var(--pink);
+      border-radius:14px;background:#fff0f7;
+    }
+    .checklist{list-style:none;padding:0}
+    .checklist li{
+      padding:10px 12px;border-bottom:1px dashed var(--line)
+    }
+    .checklist li::before{content:"☐";margin-right:9px;color:var(--pink);font-weight:900}
+    footer{text-align:center;color:var(--muted);font-size:13px;padding:25px 0 0}
+    @media(max-width:700px){
+      .hero,section{padding:20px}
+      .grid{grid-template-columns:1fr}
+      nav{top:0;border-radius:0;margin-left:-14px;margin-right:-14px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="brand">
+        <div class="mark">💊</div>
+        <div>
+          <h1>คู่มือกระจายระบบ Pharsatify</h1>
+          <p class="lead">ใช้ repository เดิม แยกแต่ละหน่วยงานเป็น subfolder และเชื่อม GAS ของตนเอง</p>
+        </div>
+      </div>
+      <span class="url">jumpon097.github.io/Pharsatify/manual/</span>
+    </header>
+
+    <nav>
+      <a href="#structure">โครงสร้าง</a>
+      <a href="#prepare">เตรียมข้อมูล</a>
+      <a href="#gas">ตั้งค่า GAS</a>
+      <a href="#pwa">สร้าง PWA</a>
+      <a href="#roles">แบ่งหน้าที่</a>
+      <a href="#check">ตรวจสอบ</a>
+    </nav>
+
+    <section id="structure">
+      <h2>1. โครงสร้างใน repo</h2>
+      <pre>Pharsatify/
+├─ index.html
+├─ manifest.webmanifest
+├─ sw.js
+├─ manual/
+├─ room9/
+│  ├─ index.html
+│  ├─ manifest.webmanifest
+│  └─ sw.js
+└─ chemo/
+   ├─ index.html
+   ├─ manifest.webmanifest
+   └─ sw.js</pre>
+      <p>ตัวอย่าง URL:</p>
+      <pre>https://jumpon097.github.io/Pharsatify/room9/
+https://jumpon097.github.io/Pharsatify/chemo/</pre>
+    </section>
+
+    <section id="prepare">
+      <h2>2. สิ่งที่ต้องเตรียมต่อหนึ่งหน่วยงาน</h2>
+      <ol>
+        <li>Google Form สำหรับคะแนนและข้อเสนอแนะ</li>
+        <li>Google Sheet ที่เชื่อมกับ Form</li>
+        <li>Telegram Chat ID ของหน่วยงาน</li>
+        <li>GAS project และ Web App URL</li>
+        <li>ชื่อ subfolder ภาษาอังกฤษ ตัวพิมพ์เล็ก ไม่มีช่องว่าง</li>
+      </ol>
+    </section>
+
+    <section id="gas">
+      <h2>3. ตั้งค่า GAS</h2>
+      <h3>ค่าที่ต้องเปลี่ยนใน Code.gs</h3>
+      <pre>const APP_CONFIG = Object.freeze({
+  FORM_ID: 'FORM_ID_ใหม่',
+  SPREADSHEET_ID: 'SPREADSHEET_ID_ใหม่',
+  RESPONSE_SHEET_ID: 123456789,
+
+  APP_TITLE: 'ประเมินความพึงพอใจ',
+  SERVICE_NAME: 'ชื่อห้องหรือหน่วยงาน',
+  HOSPITAL_NAME: 'โรงพยาบาลมะเร็งอุบลราชธานี',
+
+  DEFAULT_CHAT_ID: 'CHAT_ID_ใหม่'
+});</pre>
+      <div class="warn"><strong>สำคัญ:</strong> RESPONSE_SHEET_ID คือเลข <code>gid</code> ของแท็บตอบกลับ ไม่ใช่ Spreadsheet ID</div>
+
+      <h3>Telegram</h3>
+      <p>เก็บ Bot Token ใน Script Properties เท่านั้น ห้ามใส่ Token ใน GitHub</p>
+      <pre>TELEGRAM_BOT_TOKEN = Token ของ Bot
+TELEGRAM_CHAT_ID = Chat ID ของกลุ่ม</pre>
+      <p>รัน <code>setupTelegramConfig()</code> และ <code>authorizeSystem()</code> อย่างละหนึ่งครั้ง</p>
+
+      <h3>Deploy</h3>
+      <ol>
+        <li>Deploy → New deployment</li>
+        <li>Type: Web app</li>
+        <li>Execute as: Me</li>
+        <li>Who has access: Anyone</li>
+        <li>Deploy และคัดลอก URL ที่ลงท้าย <code>/exec</code></li>
+      </ol>
+      <p>เมื่อแก้ GAS ให้ใช้ <code>Deploy → Manage deployments → Edit → New version → Deploy</code> เพื่อรักษา URL เดิม</p>
+    </section>
+
+    <section id="pwa">
+      <h2>4. สร้าง PWA subfolder</h2>
+      <p>คัดลอกไฟล์ต่อไปนี้เข้า subfolder ใหม่</p>
+      <pre>index.html
+manifest.webmanifest
+sw.js</pre>
+
+      <h3>เปลี่ยน GAS URL</h3>
+      <pre>&lt;iframe id="appFrame" src="GAS_URL_ใหม่"&gt;&lt;/iframe&gt;</pre>
+
+      <h3>เปลี่ยนชื่อใน manifest</h3>
+      <pre>{
+  "name": "ประเมินความพึงพอใจ ชื่อหน่วยงาน",
+  "short_name": "ประเมินชื่อย่อ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone"
+}</pre>
+
+      <div class="warn">แต่ละ subfolder ต้องมี manifest และ service worker ของตนเอง เพื่อให้ติดตั้งเป็น PWA คนละแอป</div>
+    </section>
+
+    <section id="roles">
+      <h2>5. การแบ่งหน้าที่</h2>
+      <div class="grid">
+        <div class="card"><strong>ผู้ดูแลกลาง</strong>เก็บ Code.gs ต้นแบบ ดูแล GitHub และ Deploy</div>
+        <div class="card"><strong>ผู้รับผิดชอบหน่วยงาน</strong>สร้าง Form/Sheet และแจ้งชื่อหน่วยงานกับ Chat ID</div>
+        <div class="card"><strong>ผู้ทดสอบ</strong>ตรวจชีต Telegram และการกลับหน้าประเมินใน 5 วินาที</div>
+      </div>
+    </section>
+
+    <section id="check">
+      <h2>6. Checklist ก่อนเปิดใช้</h2>
+      <ul class="checklist">
+        <li>คะแนนบันทึกลงชีตถูกแท็บ</li>
+        <li>ข้อเสนอแนะบันทึกถูกคอลัมน์</li>
+        <li>Telegram ส่งเข้ากลุ่มถูกต้อง</li>
+        <li>หน้า PWA แสดงชื่อหน่วยงานถูกต้อง</li>
+        <li>หน้าขอบคุณกลับหน้าประเมินใน 5 วินาที</li>
+        <li>ทดลองติดตั้ง PWA บนมือถือหรือคอมพิวเตอร์</li>
+        <li>ไม่มี Bot Token อยู่ใน GitHub</li>
+      </ul>
+
+      <h3>แก้ไขภายหลัง</h3>
+      <ul>
+        <li>แก้หน้าตา: แก้ <code>Index.html</code> ใน GAS แล้ว Deploy New version</li>
+        <li>เปลี่ยน Form/Sheet/Chat ID: แก้ <code>Code.gs</code> แล้ว Deploy New version</li>
+        <li>เปลี่ยน GAS URL: แก้ <code>index.html</code> ใน subfolder</li>
+        <li>PWA ยังแสดงของเก่า: เพิ่มเลขเวอร์ชันใน <code>CACHE_NAME</code> ของ <code>sw.js</code></li>
+      </ul>
+    </section>
+
+    <footer>Pharsatify · คู่มือสำหรับกระจายระบบประเมินความพึงพอใจ</footer>
+  </main>
+</body>
+</html>
