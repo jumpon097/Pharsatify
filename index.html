@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
   <meta name="theme-color" content="#c73f85">
   <meta name="description" content="Pharsatify แบบประเมินความพึงพอใจห้องยา โรงพยาบาลมะเร็งอุบลราชธานี">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,27 +22,44 @@
       --muted: #776871;
     }
     * { box-sizing: border-box; }
+    :root {
+      --app-height: 100dvh;
+      --app-width: 100dvw;
+    }
     html, body {
       width: 100%;
+      min-width: 100%;
       height: 100%;
+      min-height: 100%;
       margin: 0;
       overflow: hidden;
+      overscroll-behavior: none;
       background: #fff8fc;
       font-family: "Noto Sans Thai","Sarabun",Tahoma,Arial,sans-serif;
     }
     body {
-      padding:
-        env(safe-area-inset-top)
-        env(safe-area-inset-right)
-        env(safe-area-inset-bottom)
-        env(safe-area-inset-left);
+      position: fixed;
+      inset: 0;
+      padding: 0;
     }
     #appFrame {
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      inset: 0;
+      width: var(--app-width, 100dvw);
+      height: var(--app-height, 100dvh);
+      max-width: 100%;
+      max-height: 100%;
       border: 0;
       display: block;
+      overflow: auto;
       background: #fff8fc;
+      touch-action: pan-x pan-y pinch-zoom;
+    }
+    @supports not (height: 100dvh) {
+      :root {
+        --app-height: 100vh;
+        --app-width: 100vw;
+      }
     }
     .loading {
       position: fixed;
@@ -194,6 +211,32 @@
     .fallback button:active {
       transform: translateY(1px);
     }
+
+    /* ปรับขนาดหน้าโหลดให้พอดีกับจอเล็กและแนวนอน */
+    @media (max-width: 480px), (max-height: 620px) {
+      .loading { padding: 14px; }
+      .loading-card {
+        width: min(94vw, 430px);
+        max-height: calc(var(--app-height, 100dvh) - 28px);
+        overflow: auto;
+        padding: 20px 16px;
+        border-radius: 24px;
+      }
+      .brand { gap: 10px; margin-bottom: 10px; }
+      .brand img:first-child { width: 58px; height: 58px; }
+      .brand img:last-child { width: 78px; height: 78px; border-radius: 24px; }
+      h1 { font-size: clamp(21px, 6vw, 26px); }
+      p { font-size: 13px; line-height: 1.5; }
+      .dots { margin-top: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .loading-card { width: min(86vw, 560px); }
+      .brand img:first-child { width: 46px; height: 46px; }
+      .brand img:last-child { width: 62px; height: 62px; }
+      h1 { font-size: 20px; }
+      p { margin-top: 4px; }
+    }
   </style>
 </head>
 <body>
@@ -216,7 +259,8 @@
     title="แบบประเมินความพึงพอใจห้องยา"
     src="https://script.google.com/macros/s/AKfycbxt6Y54lZn34es23XNjf7Opmw2PmeoaJVO1Ffdu44byMw9hOKSzCym-9yDggtqJ6kv-lw/exec"
     allow="clipboard-read; clipboard-write"
-    referrerpolicy="strict-origin-when-cross-origin">
+    referrerpolicy="strict-origin-when-cross-origin"
+    scrolling="yes">
   </iframe>
 
   <button id="installButton" class="floating-button" type="button">📲 ติดตั้ง Pharsatify</button>
@@ -240,6 +284,25 @@
     let deferredPrompt = null;
     let frameLoaded = false;
     let loadTimer = null;
+
+    function fitToScreen() {
+      const viewport = window.visualViewport;
+      const height = Math.round(viewport ? viewport.height : window.innerHeight);
+      const width = Math.round(viewport ? viewport.width : window.innerWidth);
+
+      document.documentElement.style.setProperty('--app-height', `${height}px`);
+      document.documentElement.style.setProperty('--app-width', `${width}px`);
+    }
+
+    fitToScreen();
+    window.addEventListener('resize', fitToScreen, { passive: true });
+    window.addEventListener('orientationchange', () => {
+      window.setTimeout(fitToScreen, 150);
+    });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', fitToScreen, { passive: true });
+      window.visualViewport.addEventListener('scroll', fitToScreen, { passive: true });
+    }
 
     function showLoading() {
       loading.classList.remove('is-hidden');
