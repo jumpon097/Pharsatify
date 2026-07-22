@@ -176,15 +176,23 @@
       color: var(--ink);
       font-size: 13px;
     }
-    .fallback a {
+    .fallback a,
+    .fallback button {
       display: inline-block;
       margin-top: 8px;
       padding: 9px 15px;
+      border: 0;
       border-radius: 999px;
       color: #fff;
       background: var(--pink);
       text-decoration: none;
+      font: inherit;
       font-weight: 800;
+      cursor: pointer;
+    }
+
+    .fallback button:active {
+      transform: translateY(1px);
     }
   </style>
 </head>
@@ -213,41 +221,88 @@
 
   <button id="installButton" class="floating-button" type="button">📲 ติดตั้ง Pharsatify</button>
 
-  <div id="fallback" class="fallback">
-    หากหน้าประเมินไม่แสดง สามารถเปิดหน้า GAS โดยตรงได้
-    <br><a href="https://script.google.com/macros/s/AKfycbxt6Y54lZn34es23XNjf7Opmw2PmeoaJVO1Ffdu44byMw9hOKSzCym-9yDggtqJ6kv-lw/exec" target="_blank" rel="noopener">เปิดแบบประเมิน</a>
+  <div id="fallback" class="fallback" role="alert">
+    หน้าประเมินใช้เวลาโหลดนานกว่าปกติ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่
+    <br><button id="retryButton" type="button">🔄 ลองโหลดในหน้านี้อีกครั้ง</button>
   </div>
 
   <script>
+    const GAS_URL =
+      'https://script.google.com/macros/s/AKfycbxt6Y54lZn34es23XNjf7Opmw2PmeoaJVO1Ffdu44byMw9hOKSzCym-9yDggtqJ6kv-lw/exec';
+
     const loading = document.getElementById('loading');
     const frame = document.getElementById('appFrame');
     const fallback = document.getElementById('fallback');
+    const retryButton = document.getElementById('retryButton');
     const network = document.getElementById('network');
     const installButton = document.getElementById('installButton');
+
     let deferredPrompt = null;
     let frameLoaded = false;
+    let loadTimer = null;
+
+    function showLoading() {
+      loading.classList.remove('is-hidden');
+      fallback.style.display = 'none';
+    }
+
+    function hideLoading() {
+      loading.classList.add('is-hidden');
+    }
+
+    function startLoadTimeout() {
+      window.clearTimeout(loadTimer);
+      loadTimer = window.setTimeout(() => {
+        if (!frameLoaded) {
+          hideLoading();
+          fallback.style.display = 'block';
+        }
+      }, 12000);
+    }
+
+    function loadSurvey() {
+      frameLoaded = false;
+      showLoading();
+
+      // เพิ่มค่าเวลาเพื่อบังคับโหลดหน้า Web App ใหม่ โดยยังคงอยู่ใน GitHub หน้าเดิม
+      const separator = GAS_URL.includes('?') ? '&' : '?';
+      frame.src = GAS_URL + separator + 'embed=1&t=' + Date.now();
+
+      startLoadTimeout();
+    }
 
     frame.addEventListener('load', () => {
       frameLoaded = true;
-      window.setTimeout(() => loading.classList.add('is-hidden'), 250);
+      window.clearTimeout(loadTimer);
+      fallback.style.display = 'none';
+      window.setTimeout(hideLoading, 250);
     });
 
-    window.setTimeout(() => {
-      if (!frameLoaded) {
-        loading.classList.add('is-hidden');
-        fallback.style.display = 'block';
+    retryButton.addEventListener('click', () => {
+      if (!navigator.onLine) {
+        updateNetwork();
+        return;
       }
-    }, 12000);
+      loadSurvey();
+    });
 
     function updateNetwork() {
-      network.classList.toggle('show', !navigator.onLine);
+      const offline = !navigator.onLine;
+      network.classList.toggle('show', offline);
+
+      if (offline) {
+        hideLoading();
+      }
     }
+
     window.addEventListener('online', () => {
       updateNetwork();
-      frame.src = frame.src;
+      loadSurvey();
     });
+
     window.addEventListener('offline', updateNetwork);
     updateNetwork();
+    startLoadTimeout();
 
     window.addEventListener('beforeinstallprompt', event => {
       event.preventDefault();
@@ -257,8 +312,10 @@
 
     installButton.addEventListener('click', async () => {
       if (!deferredPrompt) return;
+
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
+
       deferredPrompt = null;
       installButton.style.display = 'none';
     });
